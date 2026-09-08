@@ -1,19 +1,11 @@
-name: Build DTL Connect APK
+name: Build Android APK
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'DTL_Connect_v0_8/android/**'
-      - '.github/workflows/android-apk.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: DTL_Connect_v0_8/android
 
     steps:
       - name: Checkout
@@ -37,11 +29,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build debug APK
+      - name: Build APK
+        working-directory: android
         run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DTL-Connect-v0.8-debug
-          path: DTL_Connect_v0_8/android/app/build/outputs/apk/debug/app-debug.apk
+          name: DTL-Connect-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
