@@ -1,17 +1,25 @@
-name: Build Android APK
+name: Build DTL Connect APK
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'DTL_Connect_v0_8/android/**'
+      - '.github/workflows/android-apk.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: DTL_Connect_v0_8/android
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java 21
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -20,20 +28,20 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK 35
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Install Android SDK
+        run: |
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Install Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
-        working-directory: android
-        run: gradle assembleDebug
+      - name: Build debug APK
+        run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DTL-Connect-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: DTL-Connect-v0.8-debug
+          path: DTL_Connect_v0_8/android/app/build/outputs/apk/debug/app-debug.apk
